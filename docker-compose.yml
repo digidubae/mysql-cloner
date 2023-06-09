@@ -20,7 +20,3 @@ services:
       PMA_PASSWORD: root
     ports:
       - ${LOCAL_PHPMYADMIN_PORT:-8080}:80
-  percona_toolkit:
-    container_name: percona_toolkit
-    image: perconalab/percona-toolkit:latest
-    entrypoint: ["tail", "-f", "/dev/null"]
