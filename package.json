@@ -4,7 +4,8 @@
   "description": "Clone a remote mysql locally",
   "main": "index.js",
   "scripts": {
-    "start": "node index.mjs",
+    "clone": "node index.mjs",
+    "clone-no-data": "node index.mjs --exportSchemaOnly",
     "reset": "docker-compose down && rm -Rf mysql && rm backup.sql"
   },
   "keywords": [],

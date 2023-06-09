@@ -19,7 +19,9 @@ npm install
 
 ## Clone
 ```
-npm start
+docker-compose up (if not already up)
+npm run clone
+or: npm run clone-no-data (to export the database schema only)
 ```
 
 ## Reset local mysql

@@ -11,7 +11,7 @@ const DEFAULT_LOCAL_PHPMYADMIN_DOCKER_IMAGE = "phpmyadmin/phpmyadmin:latest"
 const DEFAULT_LOCAL_MYSQL_PORT = 3306
 const DEFAULT_LOCAL_PHPMYADMIN_PORT = 8080
 
-await checkEnvFile() // help the user create .env file if necessary.
+await checkEnvFile() // help the user create .env file if does not exist.
 
 dotenv.config();
 
@@ -25,13 +25,15 @@ program
     .requiredOption('--remoteMySqlUsername <remoteMySqlUsername>', 'remote mysql username', process.env.REMOTE_MYSQL_USER)
     .requiredOption('--remoteMySqlPassword <remoteMySqlPassword>', 'remote mysql password', process.env.REMOTE_MYSQL_PASSWORD)
     .requiredOption('--remoteMySqlDatabase <remoteMySqlDatabase>', 'remote mysql name', process.env.REMOTE_MYSQL_DATABASE)
+    .requiredOption('--exportSchemaOnly', 'export only schema without data', false)
+
 
 
 program.parse(process.argv);
 const options = program.opts();
 
 try {
-    await spinner(`Downloading remote database ${options.remoteMySqlDatabase}...`, () => $`docker exec -i db mysqldump --set-gtid-purged=OFF -h${options.remoteMySqlHost} -u${options.remoteMySqlUsername} -p${options.remoteMySqlPassword} -P${options.remoteMySqlPort} ${options.remoteMySqlDatabase}  > backup.sql`)
+    await spinner(`Downloading remote database ${options.remoteMySqlDatabase}...`, () => $`docker exec -i db mysqldump --set-gtid-purged=OFF ${options.exportSchemaOnly ? '--no-data' : ''} -h${options.remoteMySqlHost} -u${options.remoteMySqlUsername} -p${options.remoteMySqlPassword} -P${options.remoteMySqlPort} ${options.remoteMySqlDatabase}  > backup.sql`)
 } catch (e) {
     const errorMessage = containerNotAvailable(e)
     showError(errorMessage || `Error downloading remote database: ${e}`)
@@ -39,18 +41,18 @@ try {
 }
 
 try {
-    await spinner(`Creating local database ${options.remoteMySqlDatabase}...`, () => $`docker exec db mysql -uroot -proot -P3306 -e 'CREATE DATABASE ${options.remoteMySqlDatabase};'`)
+    await spinner(`Creating local database ${options.remoteMySqlDatabase}...`, () => $`docker exec db mysql -uroot -proot -P${options.localMySqlPort} -e 'CREATE DATABASE ${options.remoteMySqlDatabase};'`)
 } catch (e) {
     const errorMessage = containerNotAvailable(e)
     showWarning(errorMessage || `Could not create local database: ${e}`)
-    const proceed = await question(formatQuestion(`\nThere has been an error in creating local database ${options.remoteMySqlDatabase}, would you like to continue trying to import the data anyway? (y/N): `))
+    const proceed = await question(formatQuestion(`\nThere has been an error in creating local database ${options.remoteMySqlDatabase}, would you like to continue anyway? (y/N): `))
     if (proceed !== "y" && proceed !== "Y") {
         process.exit(1)
     }
 }
 
 try {
-    await spinner(`Importing data into local database ${options.remoteMySqlDatabase}...`, () => $`docker exec -i db mysql -uroot -proot -P3306 ${options.remoteMySqlDatabase} < backup.sql`)
+    await spinner(`Importing data into local database ${options.remoteMySqlDatabase}...`, () => $`docker exec -i db mysql -uroot -proot -P${options.localMySqlPort} ${options.remoteMySqlDatabase} < backup.sql`)
 } catch (e) {
     const errorMessage = containerNotAvailable(e)
     showError( errorMessage || `Error importing data into local database: ${e}`)
@@ -64,8 +66,9 @@ console.log(`password = root`)
 console.log(`host = localhost`)
 console.log(`port = ${process.env.LOCAL_MYSQL_PORT}`)
 console.log(`database = ${options.remoteMySqlDatabase}`)
+console.log(`*You can change any of the above by updating the .env file and docker compose up -d to pick up the changes\n`)
 
-console.log(`\nYou can also connect to your local database through phpmyadmin at: http://localhost:8080\n`)
+console.log(`\nYou can also connect to your local database through phpmyadmin at: http://localhost:${options.localPhpMyAdminPort}\n`)
 
 
 function formatQuestion(q) {
