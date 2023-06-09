@@ -31,7 +31,7 @@ npm run reset
 ```
 
 ## Author
-👤 **Digidub**
+👤 **DigiDub**
 
 
 ## Show your support
