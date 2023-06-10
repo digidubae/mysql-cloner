@@ -2,7 +2,7 @@ import { $, spinner } from "zx";
 import dotenv from 'dotenv';
 import replace from "replace-in-file"
 import { checkEnvFile } from "./create-env.mjs";
-import { showError, showSuccess } from "./utils.mjs";
+import { containerNotAvailable, showError, showSuccess } from "./utils.mjs";
 dotenv.config();
 const remoteMySqlHost = process.env.REMOTE_MYSQL_HOST
 const remoteMySqlPort = process.env.REMOTE_MYSQL_PORT
@@ -25,7 +25,8 @@ if (!remoteMySqlTargetUsers) {
 try {
   await spinner(`Fetching user grants from ${remoteMySqlDatabase}...`, () => $`docker exec -it percona_toolkit pt-show-grants --host=${remoteMySqlHost} --port=${remoteMySqlPort} --user=${remoteMySqlUser} --password=${remoteMySqlPassword} --database=${remoteMySqlDatabase} --only=${remoteMySqlTargetUsers} > grants.sql`)
 } catch (e) {
-  showError(`Error fetching user grants: ${e}`)
+  const errorMessage = containerNotAvailable(e)
+  showError(errorMessage || `Error fetching user grants: ${e}`)
   process.exit(1)
 }
 try {
@@ -37,7 +38,8 @@ try {
 try {
   await spinner(`Importing user grants to local database ${localMySqlDatabase}...`, () => $`docker exec -i db mysql -uroot -proot -P${localMySqlPort} ${localMySqlDatabase} < grants.sql`)
 } catch (e) {
-  showError(`Error importing exported grants to local database: ${e}`)
+  const errorMessage = containerNotAvailable(e)
+  showError(errorMessage || `Error importing exported grants to local database: ${e}`)
   process.exit(1)
 }
 

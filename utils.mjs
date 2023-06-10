@@ -22,3 +22,9 @@ export function writeFile(fileName, data) {
     fs.writeSync(fd, data);
     fs.closeSync(fd);
 }
+
+export function containerNotAvailable(e) {
+    if (e.toString().includes("No such container")) {
+        return `Docker does not seem to be up.  Try docker-compose up -d first.`
+    }
+}
