@@ -1,8 +1,9 @@
 import { $, spinner } from "zx";
 import dotenv from 'dotenv';
 import replace from "replace-in-file"
-import { checkEnvFile } from "./create-env.mjs";
-import { containerNotAvailable, showError, showSuccess } from "./utils.mjs";
+import { checkForMissingEnvFile } from "./create-env.mjs";
+import { containerNotAvailable, showError, showSuccess, validateRequiredEnvironmentVars } from "./utils.mjs";
+
 dotenv.config();
 const remoteMySqlHost = process.env.REMOTE_MYSQL_HOST
 const remoteMySqlPort = process.env.REMOTE_MYSQL_PORT
@@ -14,7 +15,21 @@ const localMySqlDatabase = remoteMySqlDatabase
 const localMySqlPort = process.env.LOCAL_MYSQL_PORT
 
 
-await checkEnvFile()
+await checkForMissingEnvFile()
+
+validateRequiredEnvironmentVars({
+  REMOTE_MYSQL_DATABASE: { type: 'string' },
+  REMOTE_MYSQL_HOST: { type: 'string' },
+  REMOTE_MYSQL_USER: { type: 'string' },
+  REMOTE_MYSQL_PASSWORD: { type: 'string' },
+  REMOTE_MYSQL_PORT: { type: 'integer' },
+  LOCAL_MYSQL_PORT: { type: 'integer' },
+  REMOTE_MYSQL_GRANT_USERS: { type: 'string' },
+},
+  {
+    requiredProperties: ['REMOTE_MYSQL_DATABASE', 'REMOTE_MYSQL_HOST', 'REMOTE_MYSQL_USER', 'REMOTE_MYSQL_PASSWORD', 'REMOTE_MYSQL_PORT', 'LOCAL_MYSQL_PORT', 'REMOTE_MYSQL_GRANT_USERS'],
+  },)
+
 const remoteMySqlTargetUsers = process.env.REMOTE_MYSQL_GRANT_USERS
 
 if (!remoteMySqlTargetUsers) {

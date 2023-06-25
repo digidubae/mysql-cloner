@@ -8,7 +8,7 @@ const DEFAULT_LOCAL_PHPMYADMIN_DOCKER_IMAGE = "phpmyadmin/phpmyadmin:latest"
 const DEFAULT_LOCAL_MYSQL_PORT = 3306
 const DEFAULT_LOCAL_PHPMYADMIN_PORT = 8080
 
-export async function checkEnvFile() {
+export async function checkForMissingEnvFile() {
     if (!fs.existsSync(ENV_FILE)) {
         showWarning("No .env file found.  Let me help you create one..\n")
         const localMySqlDockerImage = await question(`Local mysql docker image (enter for default ${DEFAULT_LOCAL_MYSQL_DOCKER_IMAGE}): `)
