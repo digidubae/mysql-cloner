@@ -31,13 +31,13 @@ npm run clone-db-schema-only
 ```
 
 ## Clone a remote mysql users grants locally
-Sometimes you want to replicate the mysql users permissions locally.
+Sometimes you want to replicate the mysql users permissions locally.  Note: you should have cloned the database first.
 ```sh
 npm run clone-grants
 ```
 
 ## Reset local mysql
-This will simply delete the local docker volume and downloaded sql export file so you can start over.
+This will simply delete the local docker volume and downloaded files so you can start over.
 ```sh
 npm run reset-local
 ```

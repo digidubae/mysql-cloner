@@ -5,7 +5,7 @@
   "scripts": {
     "clone-db": "node clone-db.mjs",
     "clone-db-schema-only": "node clone-db.mjs --exportSchemaOnly",
-    "reset-local": "docker-compose down && rm -Rf mysql && rm backup.sql",
+    "reset-local": "docker-compose down && rm -Rf mysql && rm -rf backup.sql && rm -rf grants.sql",
     "clone-grants": "node clone-grants.mjs"
   },
   "keywords": [],
