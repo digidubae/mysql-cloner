@@ -1,7 +1,6 @@
 # Custom
-Mysql
-backup.sql
-grants.sql
+mysql-docker-vol
+export
 
 # Logs
 logs

@@ -17,8 +17,14 @@
 npm install
 ```
 
-## Docker containers
-Make sure the containers are up before running any of the below commands:
+## Create .env file
+The .env file is required as it contains the configuration of remote and local mysql
+```sh
+npm run create-env
+```
+
+## Spin up local environment
+Spin up the local instance of mysql and phpmyadmin
 ```sh
 docker compose up -d
 ``` 
@@ -26,12 +32,14 @@ docker compose up -d
 ## Clone a remote mysql locally
 ```sh
 npm run clone-db
-or: 
+```
+or
+```sh
 npm run clone-db-schema-only
 ```
 
 ## Clone a remote mysql users grants locally
-Sometimes you want to replicate the mysql users permissions locally.  Note: you should have cloned the database first.
+Sometimes you want to clone the mysql users permissions locally.  Note: you should have cloned the database first.
 ```sh
 npm run clone-grants
 ```

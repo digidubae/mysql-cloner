@@ -14,6 +14,7 @@ const remoteMySqlDatabase = process.env.REMOTE_MYSQL_DATABASE
 const localMySqlDatabase = remoteMySqlDatabase
 const localMySqlPort = process.env.LOCAL_MYSQL_PORT
 
+const exportFileName = "export/grants.sql"
 
 await checkForMissingEnvFile()
 
@@ -38,12 +39,14 @@ if (!remoteMySqlTargetUsers) {
 }
 
 try {
-  await spinner(`Fetching user grants from ${remoteMySqlDatabase}...`, () => $`docker exec -it percona_toolkit pt-show-grants --host=${remoteMySqlHost} --port=${remoteMySqlPort} --user=${remoteMySqlUser} --password=${remoteMySqlPassword} --database=${remoteMySqlDatabase} --only=${remoteMySqlTargetUsers} > grants.sql`)
+  await spinner(`Fetching user grants from ${remoteMySqlDatabase}...`, () => $`docker exec -it percona_toolkit pt-show-grants --host=${remoteMySqlHost} --port=${remoteMySqlPort} --user=${remoteMySqlUser} --password=${remoteMySqlPassword} --database=${remoteMySqlDatabase} --only=${remoteMySqlTargetUsers} > ${exportFileName}`)
 } catch (e) {
   const errorMessage = containerNotAvailable(e)
   showError(errorMessage || `Error fetching user grants: ${e}`)
   process.exit(1)
 }
+showSuccess(`Successfully exported grants from ${remoteMySqlDatabase} to ${exportFileName}`)
+
 try {
   await fixExportedGrants();
 } catch (e) {
@@ -51,7 +54,7 @@ try {
   process.exit(1)
 }
 try {
-  await spinner(`Importing user grants to local database ${localMySqlDatabase}...`, () => $`docker exec -i db mysql -uroot -proot -P${localMySqlPort} ${localMySqlDatabase} < grants.sql`)
+  await spinner(`Importing user grants to local database ${localMySqlDatabase}...`, () => $`docker exec -i db mysql -uroot -proot -P${localMySqlPort} ${localMySqlDatabase} < ${exportFileName}`)
 } catch (e) {
   const errorMessage = containerNotAvailable(e)
   showError(errorMessage || `Error importing exported grants to local database: ${e}`)
@@ -63,7 +66,8 @@ showSuccess(`Grants for users ${remoteMySqlTargetUsers} has been imported into t
 
 async function fixExportedGrants() { // percona toolkit use double quotes which mysql does not like
   const options = {
-    files: './grants.sql',
+    // files: './grants.sql',
+    files: exportFileName,
     from: /"/g,
     to: '`',
     countMatches: true,

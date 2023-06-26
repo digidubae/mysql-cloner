@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import { $, question } from "zx";
 import { showSuccess, showWarning, writeFile } from './utils.mjs';
+import { program } from 'commander';
 
 const ENV_FILE = ".env"
 const DEFAULT_LOCAL_MYSQL_DOCKER_IMAGE = "mysql:8"
@@ -8,7 +9,16 @@ const DEFAULT_LOCAL_PHPMYADMIN_DOCKER_IMAGE = "phpmyadmin/phpmyadmin:latest"
 const DEFAULT_LOCAL_MYSQL_PORT = 3306
 const DEFAULT_LOCAL_PHPMYADMIN_PORT = 8080
 
-export async function checkForMissingEnvFile() {
+program
+    .requiredOption('--execute', 'execute env file check', false)
+program.parse(process.argv);
+
+const options = program.opts();
+if (options.execute === true) {
+    checkForMissingEnvFile(true)
+}
+
+export async function checkForMissingEnvFile(showConfirmationMessageIfAlreadyExists = false) {
     if (!fs.existsSync(ENV_FILE)) {
         showWarning("No .env file found.  Let me help you create one..\n")
         const localMySqlDockerImage = await question(`Local mysql docker image (enter for default ${DEFAULT_LOCAL_MYSQL_DOCKER_IMAGE}): `)
@@ -37,7 +47,13 @@ REMOTE_MYSQL_DATABASE=${remoteMySqlDatabase}
 REMOTE_MYSQL_GRANT_USERS=${remoteMySqlGrantUsers}
 `)
 
-        showSuccess(`\n\n./${ENV_FILE} file is generated`)
+        showSuccess(`${ENV_FILE} file is generated`)
         process.exit(0)
+    } else {
+        if (showConfirmationMessageIfAlreadyExists) {
+            showSuccess(".env file already exists")
+        }
     }
+
+
 }
