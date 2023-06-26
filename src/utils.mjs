@@ -26,7 +26,7 @@ export function writeFile(fileName, data) {
 
 export function containerNotAvailable(e) {
     if (e.toString().includes("No such container")) {
-        return `Docker does not seem to be up.  Try docker-compose up -d first.`
+        return `Docker does not seem to be up.  Try docker compose up -d first.`
     }
 }
 

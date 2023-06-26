@@ -12,13 +12,13 @@
 MySql Cloner is a light-weight solution designed to clone any remote MySQL database and run it locally with minimal setup required. 
 
 ## ✨ Why MySql Cloner
-More often than not, I find myself in a situation where I need to clone a remote MySQL database locally to backup the database schema and user grants, or to quickly spin up a local database for local development.
+More often than not, I find myself in a situation where I need to clone a remote MySQL database locally to backup the database schema and user grants, or to quickly spin up a local database for development.
 
 ## 📋 Pre-requisites
 Ensure you have the following prerequisites installed:
 
-- Docker and Docker Compose
-- Node.js version 16.0.0 or higher
+- Docker (tested on docker v20.10.24)
+- Node.js version 16.0.0 or higher (tested on v16.18.0)
 
 ## 🛞 Setup
 Follow these steps to get up and running:
