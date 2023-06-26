@@ -22,5 +22,5 @@ services:
       - ${LOCAL_PHPMYADMIN_PORT}:80
   percona_toolkit:
     container_name: percona_toolkit
-    image: perconalab/percona-toolkit:latest
+    image: perconalab/percona-toolkit:3.5.2
     entrypoint: ["tail", "-f", "/dev/null"]
