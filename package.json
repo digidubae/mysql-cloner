@@ -1,0 +1,29 @@
+{
+  "name": "mysql-cloner",
+  "version": "1.1.0",
+  "description": "Clone a remote mysql locally",
+  "scripts": {
+    "create-env": "node src/create-env.mjs --execute",
+    "clone-db": "node src/clone-db.mjs",
+    "clone-db-schema-only": "node src/clone-db.mjs --exportSchemaOnly",
+    "clone-grants": "node src/clone-grants.mjs",
+    "upload-local-db": "node src/upload-local-db.mjs",
+    "upload-local-db-schema-only": "node src/upload-local-db.mjs --uploadSchemaOnly",
+    "reset-local": "docker compose down && rm -Rf mysql-docker-vol && rm -rf export/*"
+  },
+  "keywords": [],
+  "author": "DigiDub",
+  "license": "ISC",
+  "dependencies": {
+    "args-parser": "^1.3.0",
+    "chalk": "^5.2.0",
+    "commander": "^10.0.1",
+    "connection-string-parser": "^1.0.4",
+    "cross-var": "^1.1.0",
+    "dotenv-cli": "^7.2.1",
+    "env-vars-validator": "^1.2.50",
+    "node-banner": "^1.4.0",
+    "replace-in-file": "^7.0.1",
+    "zx": "^7.2.2"
+  }
+}

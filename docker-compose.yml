@@ -1,0 +1,26 @@
+version: '3.1'
+services:
+  db:
+    container_name: db
+    image: ${LOCAL_MYSQL_DOCKER_IMAGE}
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - ${LOCAL_MYSQL_PORT}:3306
+    volumes:
+      - "./mysql-docker-vol:/var/lib/mysql"
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: ${LOCAL_PHPMYADMIN_DOCKER_IMAGE}
+    restart: always
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - ${LOCAL_PHPMYADMIN_PORT}:80
+  percona_toolkit:
+    container_name: percona_toolkit
+    image: perconalab/percona-toolkit:3.5.2
+    entrypoint: ["tail", "-f", "/dev/null"]
