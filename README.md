@@ -6,13 +6,15 @@
   </a>
 </p>
 
-> Simplify and Accelerate MySQL Cloning Process for Your Local Environment 🚀
+> Download and Upload MySql databases with ease 🚀
 
 ## 🌟 What is MySql Cloner
-MySql Cloner is a light-weight solution designed to clone any remote MySQL database and run it locally with minimal setup required. 
+MySql Cloner is a developer best friend to handle the operations of cloning of MySql databases with a focus on simplicity and minimum requirements. 
 
 ## ✨ Why MySql Cloner
-More often than not, I find myself in a situation where I need to clone a remote MySQL database locally to backup the database schema and user grants, or to quickly spin up a local database for development.
+Despite the existence of more modern ways to sync productions and development MySql databases (databases migrations / databases as a code), more often than not, I find myself in a situation where I need to clone remote MySQL database locally to backup the database schema and user grants, or to quickly spin up a local database for development.
+
+This repo is not a total solution, but a pretty good scaffold that saves you tons of time to achieve a simple objective and to expand from it to other use cases you might require.
 
 ## 📋 Pre-requisites
 Ensure you have the following prerequisites installed:
@@ -32,6 +34,7 @@ npm install
 ```sh
 npm run create-env
 ```
+Note: choose a MySql docker image that matches your remote MySql you want to clone to avoid compatibility issues.
 
 ## 🚕 Start the local MySQL database
 Spin up the local instance of MySQL and PHPMyAdmin
@@ -55,8 +58,9 @@ npm run clone-grants
 ```
 
 ### Upload the local MySQL database to another destination
+⚠️ This is the only command which can do damage if you don't know what you're doing.
 
-⚠️ This is the only command which can do damage if you don't know what you're doing.  Only use if you intend to upload the current local MySQL database in it's current state to another database destination.  Bad things can happen if you upload the wrong database to a production server.
+Only use if you intend to upload the current local MySQL database in it's current state to another database destination.  Bad things can happen if you upload the wrong database to a production server.
 
 ```sh
 npm run upload-local-db
@@ -66,7 +70,7 @@ or
 npm run upload-local-db-schema-only
 ```
 
-### Reset the local MySQL environment (Deletes the local Docker volume and downloaded files so you can start over)
+### Reset the local MySQL environment (Deletes the local Docker volume and downloaded files)
 ```sh
 npm run reset-local
 ```

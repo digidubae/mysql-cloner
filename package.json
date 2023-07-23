@@ -10,7 +10,7 @@
     "upload-local-db": "node src/upload-local-db.mjs",
     "upload-local-db-schema-only": "node src/upload-local-db.mjs --uploadSchemaOnly",
     "upload-grants": "node src/upload-grants.mjs",
-    "reset-local": "docker compose down && rm -Rf mysql-docker-vol && rm -rf export/*"
+    "reset-local": "docker compose down && rm -rf export/* && docker volume rm mysql-cloner_dbdata"
   },
   "keywords": [],
   "author": "DigiDub",
