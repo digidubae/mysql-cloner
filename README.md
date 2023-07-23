@@ -82,6 +82,11 @@ This command will explicitly ask you for the local users to upload AND the remot
 ```sh
 npm run upload-grants
 ```
+### Connect to an arbitrary MySql server
+Connect to any MySql server using phpmyadmin.  This can be super useful sometimes for ad-hoc requirements.
+```sh
+npm run launch-arbitrary-phpmyadmin
+```
 
 ### Reset the local MySQL environment (Deletes the local Docker volume and downloaded files)
 ```sh
