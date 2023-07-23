@@ -9,7 +9,7 @@ services:
     ports:
       - ${LOCAL_MYSQL_PORT}:3306
     volumes:
-      - "./mysql-docker-vol:/var/lib/mysql"
+      - dbdata:/var/lib/mysql
   phpmyadmin:
     container_name: phpmyadmin
     image: ${LOCAL_PHPMYADMIN_DOCKER_IMAGE}
@@ -24,3 +24,5 @@ services:
     container_name: percona_toolkit
     image: perconalab/percona-toolkit:3.5.2
     entrypoint: ["tail", "-f", "/dev/null"]
+volumes:
+  dbdata:

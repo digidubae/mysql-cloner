@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import fs from 'fs';
 import { validateEnv } from "env-vars-validator"
 import { ConnectionStringParser } from "connection-string-parser";
+import replace from "replace-in-file"
 
 export function showSuccess(s) {
     console.log("✅ " + chalk.green(s))
@@ -81,3 +82,16 @@ function getNullishProperties(obj) {
 
     return nullishKeys;
 }
+
+export async function fixExportedGrants(exportFileName) { // percona toolkit use double quotes which mysql does not like
+    const options = {
+      // files: './grants.sql',
+      files: exportFileName,
+      from: /"/g,
+      to: '`',
+      countMatches: true,
+  
+    };
+    const results = await replace.replaceInFile(options)
+    //   console.log(results)
+  }

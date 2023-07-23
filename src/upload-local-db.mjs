@@ -1,5 +1,5 @@
 import { $, spinner, question } from "zx";
-import { containerNotAvailable, showError, showWarning, formatQuestion, parseMysqlConnectionString } from "./utils.mjs";
+import { containerNotAvailable, showError, showWarning, formatQuestion, parseMysqlConnectionString, showSuccess } from "./utils.mjs";
 import { program } from 'commander';
 
 
@@ -28,28 +28,21 @@ program.parse(process.argv);
 const options = program.opts()
 
 try {
-    await spinner(`Exporting local database ${localDatabaseName}...`, () => $`docker exec -i db mysqldump --set-gtid-purged=OFF ${options.uploadSchemaOnly ? '--no-data' : ''} -hlocalhost -uroot -proot -P3306 ${localDatabaseName}  > ${exportFileName}`)
+    await spinner(`Exporting local database ${localDatabaseName}...`, () => $`docker exec -i db mysqldump --set-gtid-purged=OFF ${options.uploadSchemaOnly ? '--no-data' : ''} -hlocalhost -uroot -proot -P3306 --databases ${localDatabaseName}  > ${exportFileName}`)
 } catch (e) {
     const errorMessage = containerNotAvailable(e)
     showError(errorMessage || `Could not export local database: ${e}`)
     process.exit(1)
 }
+showSuccess(`\nLocal database exported successfully!`)
+
 
 try {
-    await spinner(`Creating remote database ${remoteDatabaseName}...`, () => $`docker exec db mysql -h${remoteDatabaseHost} -u${remoteDatabaseUser} -p${remoteDatabasePassword} -P${remoteDatabasePort} -e 'CREATE DATABASE ${remoteDatabaseName};'`)
-} catch (e) {
-    const errorMessage = containerNotAvailable(e)
-    showWarning(errorMessage || `Could not create remote database: ${e}`)
-    const proceed = await question(formatQuestion(`\nThere has been an error in creating remote database ${remoteDatabaseName}, would you like to continue anyway? (y/N): `))
-    if (proceed !== "y" && proceed !== "Y") {
-        process.exit(1)
-    }
-}
-
-try {
-    await spinner(`Uploading local database ${localDatabaseName} to ${remoteDatabaseHost}:${remoteDatabasePort}/${remoteDatabaseName}...`, () => $`docker exec -i db mysql -h${remoteDatabaseHost} -u${remoteDatabaseUser} -p${remoteDatabasePassword} -P${remoteDatabasePort} ${remoteDatabaseName} < ${exportFileName}`)
+    await spinner(`Uploading local database ${localDatabaseName} to ${remoteDatabaseHost}:${remoteDatabasePort}/${remoteDatabaseName}...`, () => $`docker exec -i db mysql -h${remoteDatabaseHost} -u${remoteDatabaseUser} -p${remoteDatabasePassword} -P${remoteDatabasePort} < ${exportFileName}`)
 } catch (e) {
     const errorMessage = containerNotAvailable(e)
     showError(errorMessage || `Could not upload local database: ${e}`)
     process.exit(1)
 }
+
+showSuccess(`\nLocal database uploaded successfully!`)

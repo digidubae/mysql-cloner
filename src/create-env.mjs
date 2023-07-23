@@ -9,14 +9,14 @@ const DEFAULT_LOCAL_PHPMYADMIN_DOCKER_IMAGE = "phpmyadmin/phpmyadmin:latest"
 const DEFAULT_LOCAL_MYSQL_PORT = 3306
 const DEFAULT_LOCAL_PHPMYADMIN_PORT = 8080
 
-program
-    .requiredOption('--execute', 'execute env file check', false)
-program.parse(process.argv);
+// program
+//     .requiredOption('--execute', 'execute env file check', false)
+// program.parse(process.argv);
 
-const options = program.opts();
-if (options.execute === true) {
-    checkForMissingEnvFile(true)
-}
+// const options = program.opts();
+// if (options.execute === true) {
+//     checkForMissingEnvFile(true)
+// }
 
 export async function checkForMissingEnvFile(showConfirmationMessageIfAlreadyExists = false) {
     if (!fs.existsSync(ENV_FILE)) {

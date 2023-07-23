@@ -1,7 +1,7 @@
-import { $, spinner, question } from "zx";
+import { $, spinner } from "zx";
 import { program } from 'commander';
 import dotenv from 'dotenv';
-import { containerNotAvailable, formatQuestion, showError, showSuccess, showWarning, validateRequiredEnvironmentVars } from "./utils.mjs";
+import { containerNotAvailable, showError, showSuccess, validateRequiredEnvironmentVars } from "./utils.mjs";
 import { checkForMissingEnvFile } from "./create-env.mjs";
 
 $.verbose = false;
@@ -42,7 +42,7 @@ const conf = {
 }
 
 try {
-    await spinner(`Downloading remote database ${conf.remoteMySqlDatabase}...`, () => $`docker exec -i db mysqldump --set-gtid-purged=OFF ${options.exportSchemaOnly ? '--no-data' : ''} -h${conf.remoteMySqlHost} -u${conf.remoteMySqlUsername} -p${conf.remoteMySqlPassword} -P${conf.remoteMySqlPort} ${conf.remoteMySqlDatabase}  > ${exportFileName}`)
+    await spinner(`Downloading remote database ${conf.remoteMySqlDatabase}...`, () => $`docker exec -i db mysqldump --set-gtid-purged=OFF ${options.exportSchemaOnly ? '--no-data' : ''} -h${conf.remoteMySqlHost} -u${conf.remoteMySqlUsername} -p${conf.remoteMySqlPassword} -P${conf.remoteMySqlPort} --databases ${conf.remoteMySqlDatabase}  > ${exportFileName}`)
 } catch (e) {
     const errorMessage = containerNotAvailable(e)
     showError(errorMessage || `Error downloading remote database: ${e}`)
@@ -50,18 +50,7 @@ try {
 }
 
 try {
-    await spinner(`Creating local database ${conf.remoteMySqlDatabase}...`, () => $`docker exec db mysql -uroot -proot -P${conf.localMySqlPort} -e 'CREATE DATABASE ${conf.remoteMySqlDatabase};'`)
-} catch (e) {
-    const errorMessage = containerNotAvailable(e)
-    showWarning(errorMessage || `Could not create local database: ${e}`)
-    const proceed = await question(formatQuestion(`\nThere has been an error in creating local database ${conf.remoteMySqlDatabase}, would you like to continue anyway? (y/N): `))
-    if (proceed !== "y" && proceed !== "Y") {
-        process.exit(1)
-    }
-}
-
-try {
-    await spinner(`Importing data into local database ${conf.remoteMySqlDatabase}...`, () => $`docker exec -i db mysql -uroot -proot -P${conf.localMySqlPort} ${conf.remoteMySqlDatabase} < ${exportFileName}`)
+    await spinner(`Importing data into local database ${conf.remoteMySqlDatabase}...`, () => $`docker exec -i db mysql -uroot -proot -P${conf.localMySqlPort} < ${exportFileName}`)
 } catch (e) {
     const errorMessage = containerNotAvailable(e)
     showError(errorMessage || `Error importing data into local database: ${e}`)
@@ -75,7 +64,6 @@ console.log(`password = root`)
 console.log(`host = localhost`)
 console.log(`port = ${process.env.LOCAL_MYSQL_PORT}`)
 console.log(`database = ${conf.remoteMySqlDatabase}`)
-console.log(`*You can change any of the above by updating the .env file and docker compose up -d to pick up the changes\n`)
 
 console.log(`\nYou can also connect to your local database through phpmyadmin at: http://localhost:${conf.localPhpMyAdminPort}\n`)
 

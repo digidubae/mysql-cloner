@@ -3,12 +3,13 @@
   "version": "1.1.0",
   "description": "Clone a remote mysql locally",
   "scripts": {
-    "create-env": "node src/create-env.mjs --execute",
+    "create-env": "node src/env-setup.mjs",
     "clone-db": "node src/clone-db.mjs",
     "clone-db-schema-only": "node src/clone-db.mjs --exportSchemaOnly",
     "clone-grants": "node src/clone-grants.mjs",
     "upload-local-db": "node src/upload-local-db.mjs",
     "upload-local-db-schema-only": "node src/upload-local-db.mjs --uploadSchemaOnly",
+    "upload-grants": "node src/upload-grants.mjs",
     "reset-local": "docker compose down && rm -Rf mysql-docker-vol && rm -rf export/*"
   },
   "keywords": [],

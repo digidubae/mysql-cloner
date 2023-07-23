@@ -1,8 +1,7 @@
 import { $, spinner } from "zx";
 import dotenv from 'dotenv';
-import replace from "replace-in-file"
 import { checkForMissingEnvFile } from "./create-env.mjs";
-import { containerNotAvailable, showError, showSuccess, validateRequiredEnvironmentVars } from "./utils.mjs";
+import { containerNotAvailable, fixExportedGrants, showError, showSuccess, validateRequiredEnvironmentVars } from "./utils.mjs";
 
 dotenv.config();
 const remoteMySqlHost = process.env.REMOTE_MYSQL_HOST
@@ -45,14 +44,15 @@ try {
   showError(errorMessage || `Error fetching user grants: ${e}`)
   process.exit(1)
 }
-showSuccess(`Successfully exported grants from ${remoteMySqlDatabase} to ${exportFileName}`)
 
 try {
-  await fixExportedGrants();
+  await fixExportedGrants(exportFileName);
 } catch (e) {
   showError(`Error updating exported grants file: ${e}`)
   process.exit(1)
 }
+showSuccess(`Successfully exported grants from ${remoteMySqlDatabase} to ${exportFileName}`)
+
 try {
   await spinner(`Importing user grants to local database ${localMySqlDatabase}...`, () => $`docker exec -i db mysql -uroot -proot -P${localMySqlPort} ${localMySqlDatabase} < ${exportFileName}`)
 } catch (e) {
@@ -64,15 +64,4 @@ try {
 showSuccess(`Grants for users ${remoteMySqlTargetUsers} has been imported into the local database`)
 
 
-async function fixExportedGrants() { // percona toolkit use double quotes which mysql does not like
-  const options = {
-    // files: './grants.sql',
-    files: exportFileName,
-    from: /"/g,
-    to: '`',
-    countMatches: true,
 
-  };
-  const results = await replace.replaceInFile(options)
-  //   console.log(results)
-}
