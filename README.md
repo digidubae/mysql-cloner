@@ -34,7 +34,7 @@ npm install
 ```sh
 npm run create-env
 ```
-Note: choose a MySql docker image that matches your remote MySql you want to clone to avoid compatibility issues.
+Tip: choose a MySql docker image that matches your remote MySql you want to clone to avoid compatibility issues.
 
 ## 🚕 Start the local MySQL database
 Spin up the local instance of MySQL and PHPMyAdmin
@@ -58,9 +58,11 @@ npm run clone-grants
 ```
 
 ### Upload the local MySQL database to another destination
-⚠️ This is the only command which can do damage if you don't know what you're doing.
+⚠️ This command can do damage if you don't know what you're doing.
 
 Only use if you intend to upload the current local MySQL database in it's current state to another database destination.  Bad things can happen if you upload the wrong database to a production server.
+
+This command will explicitly ask you for the local database name to upload AND the remote MySql connection string as a safety measure.
 
 ```sh
 npm run upload-local-db
@@ -68,6 +70,17 @@ npm run upload-local-db
 or
 ```sh
 npm run upload-local-db-schema-only
+```
+
+### Upload the local MySQL database user grants to another destination
+⚠️ This command can do damage if you don't know what you're doing.
+
+Only use if you intend to upload the current local MySQL database user grants to a remote database.  Bad things can happen if you upload the wrong grants to a production server.
+
+This command will explicitly ask you for the local users to upload AND the remote MySql connection string as a safety measure.
+
+```sh
+npm run upload-grants
 ```
 
 ### Reset the local MySQL environment (Deletes the local Docker volume and downloaded files)
